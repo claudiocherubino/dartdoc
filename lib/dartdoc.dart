@@ -13,8 +13,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
+import 'package:dartdoc/src/markdown/markdown_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -78,6 +80,43 @@ class Dartdoc extends PackageBuilder {
   /// use generators.  Useful for testing.
   factory Dartdoc.withoutGenerators(DartdocOptionContext config) {
     return new Dartdoc._(config, []);
+  }
+
+  static Future<List<Generator>> initEmptyGenerators(DartdocOptionContext config) async {
+    return [EmptyGenerator()];
+  }
+
+  /// Initialize and setup the generators.
+  static Future<List<Generator>> initGenerators(GeneratorContext config) async {
+    // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
+    // through the generators.
+    HtmlGeneratorOptions html_options = new HtmlGeneratorOptions(
+        url: config.hostedUrl,
+        relCanonicalPrefix: config.relCanonicalPrefix,
+        toolVersion: dartdocVersion,
+        faviconPath: config.favicon,
+        prettyIndexJson: config.prettyIndexJson);
+
+    MarkdownGeneratorOptions markdown_options = new MarkdownGeneratorOptions(
+        url: config.hostedUrl,
+        relCanonicalPrefix: config.relCanonicalPrefix,
+        toolVersion: dartdocVersion,
+        prettyIndexJson: config.prettyIndexJson);
+
+    return [
+      await HtmlGenerator.create(
+        options: html_options,
+        headers: config.header,
+        footers: config.footer,
+        footerTexts: config.footerTextPaths,
+      ),
+      await MarkdownGenerator.create(
+        options: markdown_options,
+        headers: config.header,
+        footers: config.footer,
+        footerTexts: config.footerTextPaths,
+      )
+    ];
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;

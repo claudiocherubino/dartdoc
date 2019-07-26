@@ -7,11 +7,10 @@ import 'dart:convert' show JsonEncoder;
 import 'dart:io' show File;
 
 import 'package:collection/collection.dart' show compareNatural;
-import 'package:dartdoc/src/html/html_generator.dart' show HtmlGeneratorOptions;
+import 'package:dartdoc/src/markdown/markdown_generator.dart' show MarkdownGeneratorOptions;
 import 'package:dartdoc/src/resource_loader.dart' as loader;
-import 'package:dartdoc/src/html/resources.g.dart' as resources;
-import 'package:dartdoc/src/html/template_data.dart';
-import 'package:dartdoc/src/html/templates.dart';
+import 'package:dartdoc/src/markdown/template_data.dart';
+import 'package:dartdoc/src/markdown/templates.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -21,32 +20,35 @@ import 'package:path/path.dart' as path;
 
 typedef void FileWriter(String path, Object content, {bool allowOverwrite});
 
-class HtmlGeneratorInstance {
-  final HtmlGeneratorOptions _options;
+class MarkdownGeneratorInstance {
+  final MarkdownGeneratorOptions _options;
   final Templates _templates;
   final PackageGraph _packageGraph;
   final List<Indexable> _indexedElements = <Indexable>[];
   final FileWriter _writer;
 
-  HtmlGeneratorInstance(
+  MarkdownGeneratorInstance(
       this._options, this._templates, this._packageGraph, this._writer);
 
   Future generate() async {
     if (_packageGraph != null) {
       _generateDocs();
-      _generateSearchIndex();
-      _generateCategoryJson();
+      //_generateSearchIndex();
+      //_generateCategoryJson();
     }
 
-    await _copyResources();
+    //await _copyResources();
+    /*
     if (_options.faviconPath != null) {
       var bytes = new File(_options.faviconPath).readAsBytesSync();
       // Allow overwrite of favicon.
       _writer(path.join('static-assets', 'favicon.png'), bytes,
           allowOverwrite: true);
     }
+    */
   }
 
+/*
   void _generateCategoryJson() {
     var encoder = new JsonEncoder.withIndent('  ');
     final List<Map> indexItems = _categorizationItems.map((Categorization e) {
@@ -75,7 +77,9 @@ class HtmlGeneratorInstance {
     String json = encoder.convert(indexItems);
     _writer(path.join('categories.json'), '${json}\n');
   }
+*/
 
+/*
   List<Categorization> _categorizationItems;
 
   void _generateSearchIndex() {
@@ -118,6 +122,7 @@ class HtmlGeneratorInstance {
     String json = encoder.convert(indexItems);
     _writer(path.join('index.json'), '${json}\n');
   }
+*/
 
   void _generateDocs() {
     if (_packageGraph == null) return;
@@ -246,8 +251,7 @@ class HtmlGeneratorInstance {
         new PackageTemplateData(_options, packageGraph, package);
     logInfo('documenting ${package.name}');
 
-    _build('index.html', _templates.indexTemplate, data);
-    _build('__404error.html', _templates.errorTemplate, data);
+    _build('index.md', _templates.indexTemplate, data);
   }
 
   void generateCategory(PackageGraph packageGraph, Category category) {
@@ -256,8 +260,7 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new CategoryTemplateData(_options, packageGraph, category);
 
-    _build(path.joinAll(category.href.split('/')), _templates.categoryTemplate,
-        data);
+    _build(path.joinAll(category.href.split('/')), _templates.categoryTemplate, data);
   }
 
   void generateLibrary(PackageGraph packageGraph, Library lib) {
@@ -268,8 +271,7 @@ class HtmlGeneratorInstance {
     }
     TemplateData data = new LibraryTemplateData(_options, packageGraph, lib);
 
-    _build(path.join(lib.dirName, '${lib.fileName}'),
-        _templates.libraryTemplate, data);
+    _build(path.join(lib.dirName, '${lib.fileName}'), _templates.libraryTemplate, data);
   }
 
   void generateClass(PackageGraph packageGraph, Library lib, Class clazz) {
@@ -289,8 +291,7 @@ class HtmlGeneratorInstance {
     TemplateData data = new ConstructorTemplateData(
         _options, packageGraph, lib, clazz, constructor);
 
-    _build(path.joinAll(constructor.href.split('/')),
-        _templates.constructorTemplate, data);
+    _build(path.joinAll(constructor.href.split('/')), _templates.constructorTemplate, data);
   }
 
   void generateEnum(PackageGraph packageGraph, Library lib, Enum eNum) {
@@ -304,8 +305,7 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new FunctionTemplateData(_options, packageGraph, lib, function);
 
-    _build(path.joinAll(function.href.split('/')), _templates.functionTemplate,
-        data);
+    _build(path.joinAll(function.href.split('/')), _templates.functionTemplate, data);
   }
 
   void generateMethod(
@@ -313,8 +313,7 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new MethodTemplateData(_options, packageGraph, lib, clazz, method);
 
-    _build(
-        path.joinAll(method.href.split('/')), _templates.methodTemplate, data);
+    _build(path.joinAll(method.href.split('/')), _templates.methodTemplate, data);
   }
 
   void generateConstant(
@@ -322,8 +321,7 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new ConstantTemplateData(_options, packageGraph, lib, clazz, property);
 
-    _build(path.joinAll(property.href.split('/')), _templates.constantTemplate,
-        data);
+    _build(path.joinAll(property.href.split('/')), _templates.constantTemplate, data);
   }
 
   void generateProperty(
@@ -331,8 +329,7 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new PropertyTemplateData(_options, packageGraph, lib, clazz, property);
 
-    _build(path.joinAll(property.href.split('/')), _templates.propertyTemplate,
-        data);
+    _build(path.joinAll(property.href.split('/')), _templates.propertyTemplate, data);
   }
 
   void generateTopLevelProperty(
@@ -340,8 +337,7 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new TopLevelPropertyTemplateData(_options, packageGraph, lib, property);
 
-    _build(path.joinAll(property.href.split('/')),
-        _templates.topLevelPropertyTemplate, data);
+    _build(path.joinAll(property.href.split('/')), _templates.topLevelPropertyTemplate, data);
   }
 
   void generateTopLevelConstant(
@@ -349,8 +345,7 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new TopLevelConstTemplateData(_options, packageGraph, lib, property);
 
-    _build(path.joinAll(property.href.split('/')),
-        _templates.topLevelConstantTemplate, data);
+    _build(path.joinAll(property.href.split('/')), _templates.topLevelConstantTemplate, data);
   }
 
   void generateTypeDef(
@@ -358,11 +353,11 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new TypedefTemplateData(_options, packageGraph, lib, typeDef);
 
-    _build(path.joinAll(typeDef.href.split('/')), _templates.typeDefTemplate,
-        data);
+    _build(path.joinAll(typeDef.href.split('/')), _templates.typeDefTemplate, data);
   }
 
   // TODO: change this to use resource_loader
+  /*
   Future _copyResources() async {
     final prefix = 'package:dartdoc/resources/';
     for (String resourcePath in resources.resource_names) {
@@ -375,9 +370,15 @@ class HtmlGeneratorInstance {
           await loader.loadAsBytes(resourcePath));
     }
   }
+  */
 
   void _build(String filename, Template template, TemplateData data) {
     String content = template.renderString(data);
+
+    // filenames end in .html, need to convert to .md
+    if (filename.endsWith('.html')) {
+      filename = filename.replaceAll('.html', '.md');
+    }
 
     _writer(filename, content);
     if (data.self is Indexable) _indexedElements.add(data.self as Indexable);

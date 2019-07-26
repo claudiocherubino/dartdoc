@@ -25,13 +25,8 @@ const _partials = const <String>[
   'features',
   'documentation',
   'name_summary',
-  'search_sidebar',
-  'sidebar_for_class',
-  'sidebar_for_category',
-  'sidebar_for_enum',
   'source_code',
   'source_link',
-  'sidebar_for_library',
   'accessor_getter',
   'accessor_setter',
 ];
@@ -74,14 +69,14 @@ Future<Map<String, String>> _loadPartials(List<String> headerPaths,
   }
 
   for (String partial in _partials) {
-    partials[partial] = await _loadPartial('_$partial.html');
+    partials[partial] = await _loadPartial('_$partial.md');
   }
 
   return partials;
 }
 
 Future<String> _getTemplateFile(String templateFileName) =>
-    loader.loadAsString('package:dartdoc/templates/html/$templateFileName');
+    loader.loadAsString('package:dartdoc/templates/markdown/$templateFileName');
 
 class Templates {
   final Template categoryTemplate;
@@ -89,7 +84,6 @@ class Templates {
   final Template enumTemplate;
   final Template constantTemplate;
   final Template constructorTemplate;
-  final Template errorTemplate;
   final Template functionTemplate;
   final Template indexTemplate;
   final Template libraryTemplate;
@@ -120,23 +114,22 @@ class Templates {
       return Template(templateContents, partialResolver: _partial);
     }
 
-    var indexTemplate = await _loadTemplate('index.html');
-    var libraryTemplate = await _loadTemplate('library.html');
-    var categoryTemplate = await _loadTemplate('category.html');
-    var classTemplate = await _loadTemplate('class.html');
-    var enumTemplate = await _loadTemplate('enum.html');
-    var functionTemplate = await _loadTemplate('function.html');
-    var methodTemplate = await _loadTemplate('method.html');
-    var constructorTemplate = await _loadTemplate('constructor.html');
-    var errorTemplate = await _loadTemplate('404error.html');
-    var propertyTemplate = await _loadTemplate('property.html');
-    var constantTemplate = await _loadTemplate('constant.html');
+    var indexTemplate = await _loadTemplate('index.md');
+    var libraryTemplate = await _loadTemplate('library.md');
+    var categoryTemplate = await _loadTemplate('category.md');
+    var classTemplate = await _loadTemplate('class.md');
+    var enumTemplate = await _loadTemplate('enum.md');
+    var functionTemplate = await _loadTemplate('function.md');
+    var methodTemplate = await _loadTemplate('method.md');
+    var constructorTemplate = await _loadTemplate('constructor.md');
+    var propertyTemplate = await _loadTemplate('property.md');
+    var constantTemplate = await _loadTemplate('constant.md');
     var topLevelConstantTemplate =
-        await _loadTemplate('top_level_constant.html');
+        await _loadTemplate('top_level_constant.md');
     var topLevelPropertyTemplate =
-        await _loadTemplate('top_level_property.html');
-    var typeDefTemplate = await _loadTemplate('typedef.html');
-    var mixinTemplate = await _loadTemplate('mixin.html');
+        await _loadTemplate('top_level_property.md');
+    var typeDefTemplate = await _loadTemplate('typedef.md');
+    var mixinTemplate = await _loadTemplate('mixin.md');
 
     return new Templates._(
         indexTemplate,
@@ -147,7 +140,6 @@ class Templates {
         functionTemplate,
         methodTemplate,
         constructorTemplate,
-        errorTemplate,
         propertyTemplate,
         constantTemplate,
         topLevelConstantTemplate,
@@ -165,7 +157,6 @@ class Templates {
       this.functionTemplate,
       this.methodTemplate,
       this.constructorTemplate,
-      this.errorTemplate,
       this.propertyTemplate,
       this.constantTemplate,
       this.topLevelConstantTemplate,

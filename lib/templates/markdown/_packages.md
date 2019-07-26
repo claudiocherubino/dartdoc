@@ -1,0 +1,25 @@
+<ol>
+  {{#packageGraph.localPackages}}
+    {{#isFirstPackage}}
+      {{#hasDocumentedCategories}}
+      <li>Topics</li>
+        {{#documentedCategories}}
+        <li>{{{linkedName}}}</li>
+        {{/documentedCategories}}
+      {{/hasDocumentedCategories}}
+      <li>Libraries</li>
+    {{/isFirstPackage}}
+    {{^isFirstPackage}}
+      <li>{{name}}</li>
+    {{/isFirstPackage}}
+    {{#defaultCategory.publicLibraries}}
+      <li>{{{linkedName}}}</li>
+    {{/defaultCategory.publicLibraries}}
+    {{#categoriesWithPublicLibraries}}
+      <li>{{name}}</li>
+      {{#publicLibraries}}
+        <li>{{{linkedName}}}</li>
+      {{/publicLibraries}}
+    {{/categoriesWithPublicLibraries}}
+  {{/packageGraph.localPackages}}
+</ol>

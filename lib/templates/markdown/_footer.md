@@ -1,0 +1,1 @@
+{{packageGraph.defaultPackage.name}} {{packageGraph.defaultPackage.version}}

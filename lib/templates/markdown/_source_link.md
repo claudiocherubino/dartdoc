@@ -1,0 +1,3 @@
+{{#hasSourceHref}}
+  [description]({{{sourceHref}}})
+{{/hasSourceHref}}
